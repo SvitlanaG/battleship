@@ -1,25 +1,29 @@
 {
-    "name": "ws_task",
-    "version": "1.0.0",
-    "description": "Template for the WebSocket remote control task",
-    "main": "index.js",
-    "type": "module",
-    "scripts": {
-        "build": "tsc",
-        "start": "node ./index.js",
-        "start:dev": "nodemon ./index.js",
-        "test": "echo \"Error: no test specified\" && exit 1"
-    },
-    "author": "Andrei Auchynnikau",
-    "keywords": [],
-    "license": "ISC",
-    "devDependencies": {
-        "@types/node": "^22.7.9",
-        "@types/ws": "^8.5.12",
-        "nodemon": "^2.0.16",
-        "typescript": "^5.6.3"
-    },
-    "dependencies": {
-        "ws": "^8.18.0"
-    }
+  "name": "ws_task",
+  "version": "1.0.0",
+  "description": "Template for the WebSocket remote control task",
+  "main": "index.ts",
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "dev": "cross-env NODE_ENV=development tsx --watch ./index.ts",
+    "start": "node ./index.js",
+    "start:dev": "npm run dev",
+    "start:prod": "npm run build && cross-env NODE_ENV=production node dist/index.js"
+  },
+  "author": "Andrei Auchynnikau",
+  "keywords": [
+    "websocket"
+  ],
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^22.7.9",
+    "@types/ws": "^8.5.12",
+    "cross-env": "^7.0.3",
+    "tsx": "^4.19.1",
+    "typescript": "^5.6.3"
+  },
+  "dependencies": {
+    "ws": "^8.18.0"
+  }
 }
