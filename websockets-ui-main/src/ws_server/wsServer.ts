@@ -9,13 +9,7 @@ interface Client {
 
 interface Message {
   type: string;
-  data: {
-    name?: string;
-    password?: string;
-    index?: number | string;
-    error?: boolean;
-    errorText?: string;
-  };
+  data: string;
   id: number;
 }
 
@@ -34,7 +28,9 @@ export const startWebSocketServer = (port: number) => {
       connection.send(
         JSON.stringify({
           type: "error",
-          data: { errorText: "Maximum number of clients reached" },
+          data: JSON.stringify({
+            errorText: "Maximum number of clients reached",
+          }),
           id: 0,
         })
       );
@@ -59,7 +55,7 @@ export const startWebSocketServer = (port: number) => {
         connection.send(
           JSON.stringify({
             type: "error",
-            data: { errorText: "Invalid JSON format" },
+            data: JSON.stringify({ errorText: "Invalid JSON format" }),
             id: id,
           })
         );
@@ -74,7 +70,7 @@ export const startWebSocketServer = (port: number) => {
         connection.send(
           JSON.stringify({
             type: "error",
-            data: { errorText: "Invalid data format" },
+            data: JSON.stringify({ errorText: "Invalid data format" }),
             id: id,
           })
         );
@@ -88,12 +84,12 @@ export const startWebSocketServer = (port: number) => {
           connection.send(
             JSON.stringify({
               type: "reg",
-              data: {
+              data: JSON.stringify({
                 name: name || "",
                 index: null,
                 error: true,
                 errorText: "Name and password are required",
-              },
+              }),
               id: id,
             })
           );
@@ -107,24 +103,24 @@ export const startWebSocketServer = (port: number) => {
           connection.send(
             JSON.stringify({
               type: "reg",
-              data: {
+              data: JSON.stringify({
                 name: name,
                 index: null,
                 error: true,
                 errorText: addUserResult,
-              },
+              }),
               id: id,
             })
           );
         } else {
           const payload: Message = {
             type: "reg",
-            data: {
+            data: JSON.stringify({
               name: name,
               index: index,
               error: false,
               errorText: "",
-            },
+            }),
             id: id,
           };
           console.log(`Sending payload to client: `, JSON.stringify(payload));
@@ -134,7 +130,7 @@ export const startWebSocketServer = (port: number) => {
         connection.send(
           JSON.stringify({
             type: "error",
-            data: { errorText: "Unknown command" },
+            data: JSON.stringify({ errorText: "Unknown command" }),
             id: id,
           })
         );
