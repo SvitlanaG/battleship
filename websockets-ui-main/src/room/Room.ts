@@ -12,6 +12,10 @@ export class Room {
     this.roomId = roomId;
   }
 
+  public getUsers(): User[] {
+    return this.users;
+  }
+
   public addUserToRoom(user: User): void {
     if (this.isGameStarted) {
       throw new Error("Cannot add user. The game has already started.");

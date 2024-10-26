@@ -1,25 +1,31 @@
 import { WebSocket as WebSocketInstance } from "ws";
 import { RoomManager } from "../room/RoomManager";
 import { MessageType, ParsedAddUserToRoomData } from "../types/types";
+import { User } from "../user/User";
 
 export default function handleAddUserToRoom(
   parsedData: ParsedAddUserToRoomData,
   connection: WebSocketInstance,
-  index: number
+  userIndex: number
 ) {
   const roomManager = RoomManager.getInstance();
   const { indexRoom } = parsedData;
 
-  const success = roomManager.addUserToRoom(indexRoom, index);
+  const success = roomManager.addUserToRoom(indexRoom, userIndex);
 
   if (success) {
+    const roomList = roomManager.getAllRooms().map((room) => ({
+      roomId: room.roomId,
+      roomUsers: room.getUsers().map((user: User) => ({
+        name: user.name,
+        index: userIndex,
+      })),
+    }));
+
     connection.send(
       JSON.stringify({
-        type: MessageType.CreateGame,
-        data: JSON.stringify({
-          idGame: roomManager.getGameId(),
-          idPlayer: index,
-        }),
+        type: MessageType.UpdateRoom,
+        data: JSON.stringify(roomList),
         id: 0,
       })
     );
