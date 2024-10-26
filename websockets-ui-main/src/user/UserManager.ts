@@ -14,10 +14,6 @@ export class UserManager {
   }
 
   public addUser(name: string, password: string): User | string {
-    if (this.users.length >= 2) {
-      return "User limit reached. Cannot add more users.";
-    }
-
     const newUser = new User(name, password);
     this.users.push(newUser);
     return newUser;

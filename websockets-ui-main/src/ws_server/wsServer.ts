@@ -1,5 +1,8 @@
 import { WebSocketServer, WebSocket as WebSocketInstance } from "ws";
-import { UserManager } from "../user/UserManager";
+import { MessageType, ParsedData } from "../types/types";
+import handleCreateRoom from "../handlers/handleCreateRoom";
+import handlePlayerRegistration from "../handlers/handlePlayerRegistration";
+import handleAddUserToRoom from "../handlers/handleAddUserToRoom";
 
 interface Client {
   connection: WebSocketInstance;
@@ -8,7 +11,7 @@ interface Client {
 }
 
 interface Message {
-  type: string;
+  type: MessageType;
   data: string;
   id: number;
 }
@@ -18,7 +21,6 @@ const MAX_CLIENTS = 2;
 export const startWebSocketServer = (port: number) => {
   const clients: Client[] = [];
   let clientIndexCounter = 0;
-  const userManager = UserManager.getInstance();
 
   const wsServer = new WebSocketServer({ port, clientTracking: true });
   console.log(`WebSocket Server is running on port ${port}!`);
@@ -42,7 +44,7 @@ export const startWebSocketServer = (port: number) => {
     const index = clientIndexCounter++;
 
     clients.push({ connection, id, index });
-    console.log(`Client connected with index: ${index} and ID: ${id} `);
+    console.log(`Client connected with index: ${index} and ID: ${id}`);
 
     connection.on("message", (message) => {
       let result: Message;
@@ -62,9 +64,11 @@ export const startWebSocketServer = (port: number) => {
         return;
       }
 
-      let parsedData;
+      let parsedData: ParsedData;
       try {
-        parsedData = JSON.parse(result.data);
+        if (result.data || result.data.trim() !== "") {
+          parsedData = JSON.parse(result.data);
+        }
       } catch (error) {
         console.error("Invalid data format", error);
         connection.send(
@@ -76,64 +80,25 @@ export const startWebSocketServer = (port: number) => {
         );
         return;
       }
-
-      if (result.type === "reg") {
-        const { name, password } = parsedData;
-
-        if (!name || !password) {
+      console.log("TYPE : ", result.type);
+      switch (result.type) {
+        case MessageType.Reg:
+          handlePlayerRegistration(parsedData, connection, id, index);
+          break;
+        case MessageType.CreateRoom:
+          handleCreateRoom(connection, index);
+          break;
+        case MessageType.AddUserToRoom:
+          handleAddUserToRoom(parsedData, connection, index);
+          break;
+        default:
           connection.send(
             JSON.stringify({
-              type: "reg",
-              data: JSON.stringify({
-                name: name || "",
-                index: null,
-                error: true,
-                errorText: "Name and password are required",
-              }),
+              type: "error",
+              data: JSON.stringify({ errorText: "Unknown command" }),
               id: id,
             })
           );
-          return;
-        }
-
-        const addUserResult = userManager.addUser(name, password);
-        console.log("Data users : ", userManager.getAllUsers());
-
-        if (typeof addUserResult === "string") {
-          connection.send(
-            JSON.stringify({
-              type: "reg",
-              data: JSON.stringify({
-                name: name,
-                index: null,
-                error: true,
-                errorText: addUserResult,
-              }),
-              id: id,
-            })
-          );
-        } else {
-          const payload: Message = {
-            type: "reg",
-            data: JSON.stringify({
-              name: name,
-              index: index,
-              error: false,
-              errorText: "",
-            }),
-            id: id,
-          };
-          console.log(`Sending payload to client: `, JSON.stringify(payload));
-          connection.send(JSON.stringify(payload));
-        }
-      } else {
-        connection.send(
-          JSON.stringify({
-            type: "error",
-            data: JSON.stringify({ errorText: "Unknown command" }),
-            id: id,
-          })
-        );
       }
     });
 
