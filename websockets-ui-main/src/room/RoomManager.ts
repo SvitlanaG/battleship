@@ -2,9 +2,6 @@ import { UserManager } from "../user/UserManager";
 import { Room } from "./Room";
 
 export class RoomManager {
-  getGameId() {
-    throw new Error("Method not implemented.");
-  }
   private static instance: RoomManager;
   private rooms: Map<number, Room> = new Map();
   private nextRoomId: number = 1;
@@ -29,8 +26,8 @@ export class RoomManager {
     return room;
   }
 
-  public getRoomById(id: string | number): Room | null {
-    return this.rooms.get(Number(id)) || null;
+  public getRoomById(id: number): Room | null {
+    return this.rooms.get(id) || null;
   }
 
   public getAllRooms(): Room[] {
@@ -45,7 +42,7 @@ export class RoomManager {
     }
   }
 
-  public addUserToRoom(roomId: string | number, userIndex: number): boolean {
+  public addUserToRoom(roomId: number, userIndex: number): boolean {
     const room = this.getRoomById(roomId);
     const userManager = UserManager.getInstance();
     const user = userManager.getAllUsers()[userIndex];

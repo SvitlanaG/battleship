@@ -4,16 +4,26 @@ export class Room {
   public readonly roomId: number;
   private users: User[] = [];
   private gameState: string | null = null;
+  private gameId: number;
   private currentPlayer: User | null = null;
   private isGameStarted: boolean = false;
   private winnerTable: Map<User, number> = new Map();
 
   constructor(roomId: number) {
     this.roomId = roomId;
+    this.gameId = this.generateGameId();
+  }
+
+  private generateGameId(): number {
+    return Date.now() + this.roomId;
   }
 
   public getUsers(): User[] {
     return this.users;
+  }
+
+  public getGameId(): number {
+    return this.gameId;
   }
 
   public addUserToRoom(user: User): void {

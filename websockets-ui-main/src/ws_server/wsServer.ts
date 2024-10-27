@@ -3,6 +3,8 @@ import { MessageType, ParsedData } from "../types/types";
 import handleCreateRoom from "../handlers/handleCreateRoom";
 import handlePlayerRegistration from "../handlers/handlePlayerRegistration";
 import handleAddUserToRoom from "../handlers/handleAddUserToRoom";
+import handleCreateGame from "../handlers/handleCreateGame";
+import { RoomManager } from "../room/RoomManager";
 
 interface Client {
   connection: WebSocketInstance;
@@ -21,7 +23,7 @@ const MAX_CLIENTS = 2;
 export const startWebSocketServer = (port: number) => {
   const clients: Client[] = [];
   let clientIndexCounter = 0;
-
+  const roomManager = RoomManager.getInstance();
   const wsServer = new WebSocketServer({ port, clientTracking: true });
   console.log(`WebSocket Server is running on port ${port}!`);
 
@@ -51,7 +53,7 @@ export const startWebSocketServer = (port: number) => {
 
       try {
         result = JSON.parse(message.toString()) as Message;
-        console.log(`Received message from client: `, result);
+        console.log(`Received message from client ${index}: `, result);
       } catch (error) {
         console.error("Invalid JSON format", error);
         connection.send(
@@ -90,6 +92,11 @@ export const startWebSocketServer = (port: number) => {
           break;
         case MessageType.AddUserToRoom:
           handleAddUserToRoom(parsedData, connection, index);
+          const room = roomManager.getRoomById(index);
+          if (room && room.getUsers().length === 2) {
+            const roomConnections = clients.map((client) => client.connection);
+            handleCreateGame(roomConnections, room.roomId);
+          }
           break;
         default:
           connection.send(
