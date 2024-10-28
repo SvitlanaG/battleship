@@ -10,7 +10,8 @@ export default function handleAddShips(
   const roomManager = RoomManager.getInstance();
   const { gameId, ships, indexPlayer } = parsedData;
 
-  const room = roomManager.getRoomById(Number(gameId));
+  const room = roomManager.getRoomByGameId(Number(gameId));
+  console.log("room ", room);
   if (!room) {
     connection.send(
       JSON.stringify({

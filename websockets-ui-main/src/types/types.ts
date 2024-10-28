@@ -23,8 +23,8 @@ export interface Position {
 export interface Ship {
   position: Position;
   direction: boolean;
-  length: number;
   type: ShipType;
+  length: number;
 }
 
 export type ParsedUserData = { name: string; password: string };

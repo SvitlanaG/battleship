@@ -15,7 +15,7 @@ export class RoomManager {
     return RoomManager.instance;
   }
 
-  public createRoom(index: number): Room {
+  public createRoom(): Room {
     const roomId = this.nextRoomId++;
     const room = new Room(roomId);
     this.rooms.set(roomId, room);
@@ -25,6 +25,15 @@ export class RoomManager {
 
   public getRoomById(id: number | undefined): Room | null | undefined {
     return id ? this.rooms.get(id) : null;
+  }
+
+  public getRoomByGameId(gameId: number): Room | undefined {
+    for (const room of this.rooms.values()) {
+      if (room.getGameId() === gameId) {
+        return room;
+      }
+    }
+    return undefined;
   }
 
   public getAllRooms(): Room[] {
@@ -42,7 +51,13 @@ export class RoomManager {
   public addUserToRoom(roomId: number, userIndex: number): boolean {
     const room = this.getRoomById(roomId);
     const userManager = UserManager.getInstance();
-    const user = userManager.getAllUsers()[userIndex];
+    let users = userManager.getAllUsers();
+    let user = null;
+    for (const userValue of users.values()) {
+      if (userValue.id === userIndex) {
+        user = userValue;
+      }
+    }
 
     if (room && user) {
       try {

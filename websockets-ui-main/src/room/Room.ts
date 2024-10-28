@@ -37,7 +37,6 @@ export class Room {
     }
     if (!this.users.includes(user)) {
       this.users.push(user);
-      console.log(`User ${user.name} added to room ${this.roomId}`);
     }
   }
 
@@ -103,7 +102,6 @@ export class Room {
 
   public addShipsForPlayer(playerIndex: number, ships: Ship[]): void {
     this.ships.set(playerIndex, ships);
-    console.log(`Ships ${ships} added for player ${playerIndex}`);
   }
 
   public getShipsForPlayer(playerIndex: number): Ship[] | undefined {
