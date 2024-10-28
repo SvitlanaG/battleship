@@ -4,6 +4,7 @@ import handleCreateRoom from "../handlers/handleCreateRoom";
 import handlePlayerRegistration from "../handlers/handlePlayerRegistration";
 import handleAddUserToRoom from "../handlers/handleAddUserToRoom";
 import handleCreateGame from "../handlers/handleCreateGame";
+import handleAddShips from "../handlers/handleAddShips";
 import { RoomManager } from "../room/RoomManager";
 
 interface Client {
@@ -48,7 +49,7 @@ export const startWebSocketServer = (port: number) => {
     clients.push({ connection, id, index });
     console.log(`Client connected with index: ${index} and ID: ${id}`);
 
-    connection.on("message", (message) => {
+    connection.on("message", async (message) => {
       let result: Message;
 
       try {
@@ -85,18 +86,25 @@ export const startWebSocketServer = (port: number) => {
       console.log("TYPE : ", result.type);
       switch (result.type) {
         case MessageType.Reg:
-          handlePlayerRegistration(parsedData, connection, id, index);
+          await handlePlayerRegistration(parsedData, connection, id, index);
           break;
         case MessageType.CreateRoom:
-          handleCreateRoom(connection, index);
+          await handleCreateRoom(connection, index);
           break;
         case MessageType.AddUserToRoom:
-          handleAddUserToRoom(parsedData, connection, index);
-          const room = roomManager.getRoomById(index);
+          const roomId = await handleAddUserToRoom(
+            parsedData,
+            connection,
+            index
+          );
+          const room = roomManager.getRoomById(roomId);
           if (room && room.getUsers().length === 2) {
             const roomConnections = clients.map((client) => client.connection);
-            handleCreateGame(roomConnections, room.roomId);
+            await handleCreateGame(roomConnections, room.roomId);
           }
+          break;
+        case MessageType.AddShips:
+          await handleAddShips(parsedData, connection, index);
           break;
         default:
           connection.send(

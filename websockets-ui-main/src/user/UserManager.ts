@@ -13,13 +13,13 @@ export class UserManager {
     return UserManager.instance;
   }
 
-  public addUser(name: string, password: string): User | string {
-    const newUser = new User(name, password);
+  public addUser(name: string, password: string, id: number): User | string {
+    const newUser = new User(name, password, id);
     this.users.push(newUser);
     return newUser;
   }
 
-  public getUserById(id: string): User | null {
+  public getUserById(id: number): User | null {
     return this.users.find((user) => user.id === id) || null;
   }
 

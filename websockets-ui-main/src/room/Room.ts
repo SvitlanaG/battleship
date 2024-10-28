@@ -1,8 +1,10 @@
 import { User } from "../user/User";
+import { Ship } from "../types/types";
 
 export class Room {
   public readonly roomId: number;
   private users: User[] = [];
+  private ships: Map<number, Ship[]> = new Map();
   private gameState: string | null = null;
   private gameId: number;
   private currentPlayer: User | null = null;
@@ -28,10 +30,10 @@ export class Room {
 
   public addUserToRoom(user: User): void {
     if (this.isGameStarted) {
-      throw new Error("Cannot add user. The game has already started.");
+      console.error("Cannot add user. The game has already started.");
     }
     if (this.users.length >= 2) {
-      throw new Error("Room is full. Cannot add more users.");
+      console.error("Room is full. Cannot add more users.");
     }
     if (!this.users.includes(user)) {
       this.users.push(user);
@@ -41,12 +43,17 @@ export class Room {
 
   public startGame(): void {
     if (this.users.length < 2) {
-      throw new Error("Cannot start the game, not enough players.");
+      console.error("Cannot start the game, not enough players.");
     }
     this.isGameStarted = true;
     this.gameState = "in_progress";
     this.currentPlayer = this.users[0];
-    console.log(`Game started in room ${this.roomId}`);
+    console.log(
+      `Game started in room ${this.roomId}. Players: ${this.users
+        .map((user) => user.name)
+        .join(", ")}`
+    );
+    console.log(`Current player set to: ${this.currentPlayer?.name}`);
   }
 
   public finishGame(): void {
@@ -58,7 +65,7 @@ export class Room {
 
   public updateGameState(newState: string): void {
     if (!this.isGameStarted) {
-      throw new Error("Cannot update game state. The game has not started.");
+      console.error("Cannot update game state. The game has not started.");
     }
     this.gameState = newState;
     console.log(`Game state updated in room ${this.roomId}`);
@@ -66,7 +73,7 @@ export class Room {
 
   public updateTurn(): void {
     if (!this.isGameStarted) {
-      throw new Error("Cannot update turn. The game has not started.");
+      console.error("Cannot update turn. The game has not started.");
     }
     const currentIndex = this.users.indexOf(this.currentPlayer as User);
     const nextIndex = (currentIndex + 1) % this.users.length;
@@ -92,5 +99,18 @@ export class Room {
         ([user, wins]) => ({ name: user.name, wins })
       ),
     };
+  }
+
+  public addShipsForPlayer(playerIndex: number, ships: Ship[]): void {
+    this.ships.set(playerIndex, ships);
+    console.log(`Ships ${ships} added for player ${playerIndex}`);
+  }
+
+  public getShipsForPlayer(playerIndex: number): Ship[] | undefined {
+    return this.ships.get(playerIndex);
+  }
+
+  public areAllShipsPlaced(): boolean {
+    return this.ships.size === this.users.length;
   }
 }

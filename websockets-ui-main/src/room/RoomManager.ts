@@ -18,16 +18,13 @@ export class RoomManager {
   public createRoom(index: number): Room {
     const roomId = this.nextRoomId++;
     const room = new Room(roomId);
-    const userManager = UserManager.getInstance();
-    const user = userManager.getAllUsers()[index];
-    room.addUserToRoom(user);
     this.rooms.set(roomId, room);
-    console.log(`Room ${roomId} created by user ${user.name}`);
+    console.log(`Room ${roomId} created`);
     return room;
   }
 
-  public getRoomById(id: number): Room | null {
-    return this.rooms.get(id) || null;
+  public getRoomById(id: number | undefined): Room | null | undefined {
+    return id ? this.rooms.get(id) : null;
   }
 
   public getAllRooms(): Room[] {

@@ -13,14 +13,34 @@ export enum MessageType {
   Finish = "finish",
 }
 
+export type ShipType = "small" | "medium" | "large" | "huge";
+
+export interface Position {
+  x: number;
+  y: number;
+}
+
+export interface Ship {
+  position: Position;
+  direction: boolean;
+  length: number;
+  type: ShipType;
+}
+
 export type ParsedUserData = { name: string; password: string };
-export type ParsedAddUserToRoomData = { indexRoom: number | string };
+export type ParsedAddUserToRoomData = { indexRoom: number };
 export type ParsedCreateGameData = {
   idGame: number | string;
   idPlayer: number | string;
+};
+export type ParsedAddShipsData = {
+  gameId: number | string;
+  ships: Ship[];
+  indexPlayer: number | string;
 };
 
 export type ParsedData =
   | ParsedUserData
   | ParsedAddUserToRoomData
-  | ParsedCreateGameData;
+  | ParsedCreateGameData
+  | ParsedAddShipsData;

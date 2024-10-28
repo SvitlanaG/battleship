@@ -29,6 +29,7 @@ export default function handleAddUserToRoom(
         id: 0,
       })
     );
+    return indexRoom;
   } else {
     connection.send(
       JSON.stringify({

@@ -27,7 +27,7 @@ export default function handlePlayerRegistration(
     return;
   }
 
-  const addUserResult = userManager.addUser(name, password);
+  const addUserResult = userManager.addUser(name, password, index);
 
   if (typeof addUserResult === "string") {
     connection.send(
