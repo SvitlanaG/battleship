@@ -104,7 +104,11 @@ export const startWebSocketServer = (port: number) => {
           }
           break;
         case MessageType.AddShips:
-          await handleAddShips(parsedData, connection, index);
+          await handleAddShips(parsedData, connection);
+          break;
+        case MessageType.Attack:
+          console.log("Attack parsed data: ", parsedData);
+          await handleAttackMessage(parsedData, connection);
           break;
         default:
           connection.send(
@@ -128,3 +132,14 @@ export const startWebSocketServer = (port: number) => {
     });
   });
 };
+
+function handleAttackMessage(
+  parsedData: ParsedData,
+  connection: WebSocketInstance
+): void {
+  const { x, y, gameId, indexPlayer } = parsedData;
+  const roomManager = RoomManager.getInstance();
+  const room = roomManager.getRoomByGameId(gameId);
+
+  room?.handleAttack(x, y, indexPlayer);
+}

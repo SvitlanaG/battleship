@@ -4,14 +4,12 @@ import { MessageType, ParsedAddShipsData } from "../types/types";
 
 export default function handleAddShips(
   parsedData: ParsedAddShipsData,
-  connection: WebSocketInstance,
-  index: number
+  connection: WebSocketInstance
 ) {
   const roomManager = RoomManager.getInstance();
   const { gameId, ships, indexPlayer } = parsedData;
 
   const room = roomManager.getRoomByGameId(Number(gameId));
-  console.log("room ", room);
   if (!room) {
     connection.send(
       JSON.stringify({
@@ -58,10 +56,7 @@ export default function handleAddShips(
         })
       );
     });
-    console.log(
-      `Game started in room ${room.roomId}. Current game state:`,
-      room.getRoomState()
-    );
+    console.log(`Game started in room ${room.roomId}.`);
     room.startGame();
   } else {
     console.log(`Not all ships are placed yet in room ${room.roomId}`);

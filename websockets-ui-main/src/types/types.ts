@@ -14,6 +14,8 @@ export enum MessageType {
 }
 
 export type ShipType = "small" | "medium" | "large" | "huge";
+export type CellStatus = "empty" | "ship" | "hit" | "miss";
+export type AttackStatus = "miss" | "killed" | "shot";
 
 export interface Position {
   x: number;
