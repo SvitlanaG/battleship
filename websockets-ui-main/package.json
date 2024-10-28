@@ -1,0 +1,26 @@
+{
+  "name": "ws_task",
+  "version": "1.0.0",
+  "description": "Template for the WebSocket remote control task",
+  "main": "index.ts",
+  "type": "module",
+  "scripts": {
+    "start:dev": "cross-env NODE_ENV=development tsx --watch ./index.ts",
+    "start": "tsx ./index.ts"
+  },
+  "author": "Andrei Auchynnikau",
+  "keywords": [
+    "websocket"
+  ],
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^22.7.9",
+    "@types/ws": "^8.5.12",
+    "cross-env": "^7.0.3",
+    "tsx": "^4.19.1",
+    "typescript": "^5.6.3"
+  },
+  "dependencies": {
+    "ws": "^8.18.0"
+  }
+}
