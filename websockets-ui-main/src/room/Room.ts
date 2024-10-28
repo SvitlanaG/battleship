@@ -1,5 +1,5 @@
 import { User } from "../user/User";
-import { Ship } from "../types/types";
+import { MessageType, Ship } from "../types/types";
 
 export class Room {
   public readonly roomId: number;
@@ -47,6 +47,7 @@ export class Room {
     this.isGameStarted = true;
     this.gameState = "in_progress";
     this.currentPlayer = this.users[0];
+    this.broadcastTurn();
     console.log(
       `Game started in room ${this.roomId}. Players: ${this.users
         .map((user) => user.name)
@@ -73,10 +74,12 @@ export class Room {
   public updateTurn(): void {
     if (!this.isGameStarted) {
       console.error("Cannot update turn. The game has not started.");
+      return;
     }
     const currentIndex = this.users.indexOf(this.currentPlayer as User);
     const nextIndex = (currentIndex + 1) % this.users.length;
     this.currentPlayer = this.users[nextIndex];
+    this.broadcastTurn();
     console.log(
       `It's now ${this.currentPlayer?.name}'s turn in room ${this.roomId}`
     );
@@ -110,5 +113,19 @@ export class Room {
 
   public areAllShipsPlaced(): boolean {
     return this.ships.size === this.users.length;
+  }
+
+  private broadcastTurn(): void {
+    const turnMessage = JSON.stringify({
+      type: MessageType.Turn,
+      data: {
+        currentPlayer: this.currentPlayer?.id,
+      },
+      id: 0,
+    });
+
+    this.users.forEach((user) => {
+      user.connection.send(turnMessage);
+    });
   }
 }

@@ -1,4 +1,5 @@
 import { User } from "./User";
+import { WebSocket as WebSocketInstance } from "ws";
 
 export class UserManager {
   private static instance: UserManager;
@@ -13,8 +14,13 @@ export class UserManager {
     return UserManager.instance;
   }
 
-  public addUser(name: string, password: string, id: number): User | string {
-    const newUser = new User(name, password, id);
+  public addUser(
+    name: string,
+    password: string,
+    id: number,
+    connection: WebSocketInstance
+  ): User | string {
+    const newUser = new User(name, password, id, connection);
     this.users.push(newUser);
     return newUser;
   }
