@@ -5,6 +5,7 @@
   "main": "index.ts",
   "type": "module",
   "scripts": {
+    "start:dev": "cross-env NODE_ENV=development tsx --watch ./index.ts",
     "start": "tsx ./index.ts"
   },
   "author": "Andrei Auchynnikau",
